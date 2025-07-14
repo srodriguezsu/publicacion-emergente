@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name: Publicacion Emergente
- * Description: Displays the latest post marked "Mostrar en la ventana emergente" in a popup on the homepage.
- * Version: 1.1
+ * Description: Muestra la última entrada marcada como "Mostrar en la ventana emergente" en una ventana emergente en la página de inicio.
+ * Version: 1.2
  * Author: Sebastian Rodriguez
  */
 
 if (!defined('ABSPATH')) exit;
 
-// Add meta box
+// Add meta box to posts
 add_action('add_meta_boxes', function () {
     add_meta_box('popup_post_meta', 'Ventana Emergente', function ($post) {
         $checked = get_post_meta($post->ID, '_show_in_popup', true) ? 'checked' : '';
@@ -16,7 +16,7 @@ add_action('add_meta_boxes', function () {
     }, 'post', 'side');
 });
 
-// Save meta box
+// Save checkbox value
 add_action('save_post', function ($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (isset($_POST['show_in_popup'])) {
@@ -26,12 +26,17 @@ add_action('save_post', function ($post_id) {
     }
 });
 
-// Register settings
+// Register plugin settings
 add_action('admin_init', function () {
     register_setting('popup_options_group', 'popup_settings');
     add_settings_section('popup_main', 'Ajustes de la Ventana Emergente', null, 'popup-settings');
 
-    add_settings_field('popup_primary_color', 'Color Primario', function () {
+    add_settings_field('popup_heading', 'Título del popup', function () {
+        $val = get_option('popup_settings')['popup_heading'] ?? 'You might like';
+        echo "<input type='text' name='popup_settings[popup_heading]' value='" . esc_attr($val) . "' style='width:300px'>";
+    }, 'popup-settings', 'popup_main');
+
+    add_settings_field('popup_primary_color', 'Color primario', function () {
         $val = get_option('popup_settings')['popup_primary_color'] ?? '#0073aa';
         echo "<input type='color' name='popup_settings[popup_primary_color]' value='$val'>";
     }, 'popup-settings', 'popup_main');
@@ -51,31 +56,38 @@ add_action('admin_init', function () {
         echo "<input type='number' name='popup_settings[popup_radius]' value='$val' min='0'>";
     }, 'popup-settings', 'popup_main');
 
-    add_settings_field('popup_frequency', 'Mostrar de nuevo después de (horas)', function () {
-        $val = get_option('popup_settings')['popup_frequency'] ?? '24';
+    add_settings_field('popup_frequency', 'Mostrar de nuevo después de (minutos)', function () {
+        $val = get_option('popup_settings')['popup_frequency'] ?? '60';
         echo "<input type='number' name='popup_settings[popup_frequency]' value='$val' min='1'>";
     }, 'popup-settings', 'popup_main');
 });
 
-// Add admin menu
+// Add top-level admin menu
 add_action('admin_menu', function () {
-    add_options_page('Ventana Emergente', 'Ventana Emergente', 'manage_options', 'popup-settings', function () {
-        ?>
-        <div class="wrap">
-            <h1>Ajustes de la Ventana Emergente</h1>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields('popup_options_group');
-                do_settings_sections('popup-settings');
-                submit_button();
-                ?>
-            </form>
-        </div>
-        <?php
-    });
+    add_menu_page(
+        'Ventana Emergente',
+        'Publicación Emergente',
+        'manage_options',
+        'popup-settings',
+        function () {
+            ?>
+            <div class="wrap">
+                <h1>Configuración de Publicación Emergente</h1>
+                <form method="post" action="options.php">
+                    <?php
+                    settings_fields('popup_options_group');
+                    do_settings_sections('popup-settings');
+                    submit_button();
+                    ?>
+                </form>
+            </div>
+            <?php
+        },
+        'dashicons-format-aside'
+    );
 });
 
-// Frontend popup
+// Inject popup in footer
 add_action('wp_footer', function () {
     if (!is_front_page()) return;
 
@@ -84,7 +96,8 @@ add_action('wp_footer', function () {
     $text    = esc_attr($settings['popup_text_color'] ?? '#ffffff');
     $bg      = esc_attr($settings['popup_bg_color'] ?? '#ffffff');
     $radius  = intval($settings['popup_radius'] ?? 10);
-    $hours   = intval($settings['popup_frequency'] ?? 24);
+    $minutes = intval($settings['popup_frequency'] ?? 60);
+    $heading = esc_html($settings['popup_heading'] ?? 'You might like');
 
     $args = [
         'post_type'      => 'post',
@@ -105,12 +118,12 @@ add_action('wp_footer', function () {
         ?>
         <div id="custom-popup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; background:<?php echo $bg; ?>; max-width:90%; width:600px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:<?php echo $radius; ?>px; overflow:hidden;">
             <div style="padding:2rem; background-color:<?php echo $primary; ?>; color:<?php echo $text; ?>; text-align:center;">
-                <h1 style="margin:0; font-size:1.5rem;">Informes Institucionales</h1>
+                <h1 style="margin:0; font-size:1.5rem;"><?php echo $heading; ?></h1>
             </div>
             <div style="padding:1.5rem; text-align:center;">
                 <h1 style="font-size:clamp(1.5rem,5vw,2.5rem); margin:1rem 0; text-shadow:1px 1px 3px rgba(0,0,0,0.5);"><?php echo esc_html($title); ?></h1>
                 <p style="color:#333; margin:1em 0;"><?php echo esc_html($excerpt); ?></p>
-                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $text; ?>; text-decoration:none; border-radius:50px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Leer más</a>
+                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $text; ?>; text-decoration:none; border-radius:50px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
             </div>
             <button id="close-popup" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">✖</button>
         </div>
@@ -119,8 +132,8 @@ add_action('wp_footer', function () {
             document.addEventListener('DOMContentLoaded', function () {
                 const lastShown = localStorage.getItem('popupLastShown');
                 const now = Date.now();
-                const hours = <?php echo $hours; ?>;
-                const msInterval = hours * 60 * 60 * 1000;
+                const minutes = <?php echo $minutes; ?>;
+                const msInterval = minutes * 60 * 1000;
 
                 if (!lastShown || (now - parseInt(lastShown)) > msInterval) {
                     setTimeout(() => {
