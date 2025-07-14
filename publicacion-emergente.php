@@ -149,7 +149,7 @@ add_action('wp_footer', function () {
             <div style="padding:1.5rem; text-align:center;">
                 <h1 style="font-size:clamp(1.5rem,5vw,2.5rem); margin:1rem 0; text-shadow:1px 1px 3px rgba(0,0,0,0.5);"><?php echo esc_html($title); ?></h1>
                 <p style="color:<?php echo $text ?>; margin:1em 0;"><?php echo esc_html($excerpt); ?></p>
-                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-decoration:none; border-radius:50px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
+                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-decoration:none; border-radius:<?php echo $radius; ?>px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
             </div>
             <button id="close-popup" style="position:absolute; top:10px; color:<?php echo $contrast; ?>; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">✖</button>
         </div>
