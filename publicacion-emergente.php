@@ -56,6 +56,11 @@ add_action('admin_init', function () {
         echo "<input type='text' name='popup_settings[popup_heading]' value='" . esc_attr($val) . "' style='width:300px'>";
     }, 'popup-settings', 'popup_main');
 
+    add_settings_field('popup_header_color', 'Color del título', function () {
+        $val = get_option('popup_settings')['popup_header_color'] ?? '#fff';
+        echo "<input type='color' name='popup_settings[popup_header_color]' value='$val'>";
+    }, 'popup-settings', 'popup_main');
+
     add_settings_field('popup_primary_color', 'Color primario', function () {
         $val = get_option('popup_settings')['popup_primary_color'] ?? '#0073aa';
         echo "<input type='color' name='popup_settings[popup_primary_color]' value='$val'>";
@@ -113,6 +118,7 @@ add_action('wp_footer', function () {
 
     $settings = get_option('popup_settings');
     $primary = esc_attr($settings['popup_primary_color'] ?? '#0073aa');
+    $contrast = esc_attr($settings['popup_header_color'] ?? '#ffffff');
     $text    = esc_attr($settings['popup_text_color'] ?? '#ffffff');
     $bg      = esc_attr($settings['popup_bg_color'] ?? '#ffffff');
     $radius  = intval($settings['popup_radius'] ?? 10);
@@ -137,13 +143,13 @@ add_action('wp_footer', function () {
         wp_reset_postdata();
         ?>
         <div id="custom-popup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; background:<?php echo $bg; ?>; max-width:90%; width:600px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:<?php echo $radius; ?>px; overflow:hidden;">
-            <div style="padding:2rem; background-color:<?php echo $primary; ?>; color:<?php echo $text; ?>; text-align:center;">
+            <div style="padding:2rem; background-color:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-align:center;">
                 <h1 style="margin:0; font-size:1.5rem;"><?php echo $heading; ?></h1>
             </div>
             <div style="padding:1.5rem; text-align:center;">
                 <h1 style="font-size:clamp(1.5rem,5vw,2.5rem); margin:1rem 0; text-shadow:1px 1px 3px rgba(0,0,0,0.5);"><?php echo esc_html($title); ?></h1>
                 <p style="color:#333; margin:1em 0;"><?php echo esc_html($excerpt); ?></p>
-                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $text; ?>; text-decoration:none; border-radius:50px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
+                <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-decoration:none; border-radius:50px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
             </div>
             <button id="close-popup" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">✖</button>
         </div>
