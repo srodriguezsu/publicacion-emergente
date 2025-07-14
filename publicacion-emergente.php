@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Publicacion Emergente
  * Description: Muestra la última entrada marcada como "Mostrar en la ventana emergente" en una ventana emergente en la página de inicio.
- * Version: 1.3
+ * Version: 1.4
  * Author: Sebastian Rodriguez
  */
 
