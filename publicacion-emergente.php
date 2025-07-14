@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Publicacion Emergente
  * Description: Muestra la última entrada marcada como "Mostrar en la ventana emergente" en una ventana emergente en la página de inicio.
- * Version: 1.4
+ * Version: 1.5
  * Author: Sebastian Rodriguez
  */
 
@@ -164,17 +164,32 @@ add_action('wp_footer', function () {
                 if (!lastShown || (now - parseInt(lastShown)) > msInterval) {
                     setTimeout(() => {
                         const popup = document.getElementById('custom-popup');
-                        const closeBtn = document.getElementById('close-popup');
+                        const overlay = document.createElement('div');
+                        overlay.id = 'popup-overlay';
+                        overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 9998;
+                `;
+                        document.body.appendChild(overlay);
                         popup.style.display = 'block';
+                        document.body.style.overflow = 'hidden'; // disable scroll
 
-                        closeBtn.addEventListener('click', function () {
+                        document.getElementById('close-popup').addEventListener('click', function () {
                             popup.style.display = 'none';
                             localStorage.setItem('popupLastShown', Date.now());
+                            document.body.style.overflow = ''; // re-enable scroll
+                            document.getElementById('popup-overlay')?.remove();
                         });
                     }, 2000);
                 }
             });
         </script>
+
         <?php
     }
 });
