@@ -19,12 +19,32 @@ add_action('add_meta_boxes', function () {
 // Save checkbox value
 add_action('save_post', function ($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    if (get_post_type($post_id) !== 'post') return;
+
     if (isset($_POST['show_in_popup'])) {
+        // Set current post as selected
         update_post_meta($post_id, '_show_in_popup', '1');
+
+        // Unset other posts that were previously marked
+        $args = [
+            'post_type'      => 'post',
+            'post_status'    => 'any',
+            'posts_per_page' => -1,
+            'post__not_in'   => [$post_id],
+            'meta_key'       => '_show_in_popup',
+            'meta_value'     => '1'
+        ];
+        $query = new WP_Query($args);
+        foreach ($query->posts as $post) {
+            delete_post_meta($post->ID, '_show_in_popup');
+        }
     } else {
+        // Allow disabling popup for this post
         delete_post_meta($post_id, '_show_in_popup');
     }
 });
+
 
 // Register plugin settings
 add_action('admin_init', function () {
