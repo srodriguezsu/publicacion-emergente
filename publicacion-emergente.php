@@ -67,7 +67,7 @@ add_action('admin_init', function () {
     }, 'popup-settings', 'popup_main');
 
     add_settings_field('popup_text_color', 'Color del texto', function () {
-        $val = get_option('popup_settings')['popup_text_color'] ?? '#ffffff';
+        $val = get_option('popup_settings')['popup_text_color'] ?? '#000';
         echo "<input type='color' name='popup_settings[popup_text_color]' value='$val'>";
     }, 'popup-settings', 'popup_main');
 
@@ -119,7 +119,7 @@ add_action('wp_footer', function () {
     $settings = get_option('popup_settings');
     $primary = esc_attr($settings['popup_primary_color'] ?? '#0073aa');
     $contrast = esc_attr($settings['popup_header_color'] ?? '#ffffff');
-    $text    = esc_attr($settings['popup_text_color'] ?? '#ffffff');
+    $text    = esc_attr($settings['popup_text_color'] ?? '#000');
     $bg      = esc_attr($settings['popup_bg_color'] ?? '#ffffff');
     $radius  = intval($settings['popup_radius'] ?? 10);
     $minutes = intval($settings['popup_frequency'] ?? 60);
@@ -148,10 +148,10 @@ add_action('wp_footer', function () {
             </div>
             <div style="padding:1.5rem; text-align:center;">
                 <h1 style="font-size:clamp(1.5rem,5vw,2.5rem); margin:1rem 0; text-shadow:1px 1px 3px rgba(0,0,0,0.5);"><?php echo esc_html($title); ?></h1>
-                <p style="color:#333; margin:1em 0;"><?php echo esc_html($excerpt); ?></p>
+                <p style="color:<?php echo $text ?>; margin:1em 0;"><?php echo esc_html($excerpt); ?></p>
                 <a href="<?php echo esc_url($link); ?>" target="_blank" rel="noopener" style="display:inline-block; padding:0.8rem 2rem; background:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-decoration:none; border-radius:50px; font-weight:600; letter-spacing:0.5px;">Leer más</a>
             </div>
-            <button id="close-popup" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">✖</button>
+            <button id="close-popup" style="position:absolute; top:10px; color:<?php echo $contrast; ?>; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">✖</button>
         </div>
 
         <script>
