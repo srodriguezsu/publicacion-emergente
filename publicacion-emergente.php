@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Publicacion Emergente
  * Description: Muestra la última entrada marcada como "Mostrar en la ventana emergente" en una ventana emergente en la página de inicio.
- * Version: 1.5
+ * Version: 1.6
  * Author: Sebastian Rodriguez
  */
 
@@ -143,8 +143,8 @@ add_action('wp_footer', function () {
         wp_reset_postdata();
         ?>
         <div id="custom-popup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; background:<?php echo $bg; ?>; max-width:90%; width:600px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:<?php echo $radius; ?>px; overflow:hidden;">
-            <div style="padding:2rem; background-color:<?php echo $primary; ?>; color:<?php echo $contrast; ?>; text-align:center;">
-                <h1 style="margin:0; font-size:1.5rem;"><?php echo $heading; ?></h1>
+            <div style="padding:2rem; background-color:<?php echo $primary; ?>; text-align:center;">
+                <h1 style="margin:0; font-size:1.5rem; color:<?php echo $contrast; ?>;"><?php echo $heading; ?></h1>
             </div>
             <div style="padding:1.5rem; text-align:center;">
                 <h1 style="font-size:clamp(1.5rem,5vw,2.5rem); margin:1rem 0; text-shadow:1px 1px 3px rgba(0,0,0,0.5);"><?php echo esc_html($title); ?></h1>
