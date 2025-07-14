@@ -1,8 +1,5 @@
 # Publicación Emergente
-
-**Versión:** 1.4  
-**Autor:** Sebastian Rodriguez  
-**Descripción:**  
+  
 Este plugin permite mostrar una ventana emergente (popup) en la página de inicio de tu sitio WordPress, destacando una entrada seleccionada. Solo una entrada puede estar activa al mismo tiempo. El contenido del popup incluye el título, extracto y un botón de "Leer más".
 
 ---
